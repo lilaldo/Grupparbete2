@@ -12,7 +12,6 @@ def index():
 
 from flask import Flask, render_template, request, jsonify
 
-app = Flask(__name__)
 
 @app.route('/')
 @app.route('/reseplanerare', methods=['GET', 'POST'])
