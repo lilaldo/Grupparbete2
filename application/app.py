@@ -34,57 +34,69 @@ def search():
 
 ##############################################################################################
 
+# Dict för att lagra SiteId.
 siteid_dict = {}
 
+# Endpoint för realtid via navbar.
 @app.route('/realtid', methods=['POST','GET'])
 def realtid():
+    # Hämtar användarens inmatning i sökfältey.
     if request.method == 'POST':
-        # Hämta användarens inmatning från api
+        # Svaret hämtas och lagras i variabeln.
         station = request.form.get('station')
 
-        # Kontrollera om stationen redan finns i siteid
+        # kontrollerar om stationen redan finns i dict.
         if station in siteid_dict:
             siteid = siteid_dict[station]
+        # Om inte så görs en förfrågan till api för att hämta SiteId
         else:
-            # Gör en API-förfrågan för att hämta siteid
+            # Lagring av api-key för att att hämta alla hållplatser.
             api_key = '045de5f58ee24c00ae94d24c4c958908'
-            station_input = station  # Användarens inmatning
+            station_input = station
             api_url = f'https://api.sl.se/api2/LineData.json?model=site&key={api_key}&stopAreaName={station}'
+            # ... Och läser dessa om json.
             response = requests.get(api_url)
             data = response.json()
 
-            if 'ResponseData' in data and data['ResponseData']:
-                # Extrahera siteid från API-svaret
-                siteid = data['ResponseData'][0]['SiteId']
-                # Lagra siteid i din dictionary
-                siteid_dict[station] = siteid
+            # Kontrollerar att giltig 'SiteId' finns i api.
+            if 'SiteId' in data:
+                siteid = data['SiteId']
+                siteid_dict['SiteId'] = siteid
             else:
-                # Om ingen data hittades för stationen, led om användaren
-                return redirect(url_for('realtid'))
+                # Om ingen datat hittas så skickar användaren tillbaka.
+                return redirect('/realtid')
 
 
+        # Lagring av api-key för att hämta tidtabell i realtid.
         real_apikey = 'a8a250f2c2634381a8065817445217d5'
         real_api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={siteid}'
         response = requests.get(real_api_url)
         realtidsdata = response.json()
 
+        # Resultat av svaret hämtat från api.
         return render_template('realtid.html', realtidsdata=realtidsdata)
-
+    # # Om ingen datat hittas så skickar användaren tillbaka.
     return render_template('realtid.html')
 
+
+# Endpoint för resultat av realtids-sökningen.
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
-    station = request.args.get('station') '
-
+    station = request.args.get('station')
+    # Api för att hämta realtids-svaret och leverera denna igen på denna endpoint, fast hämtat.
     real_apikey = 'a8a250f2c2634381a8065817445217d5'
-    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station}'  # Ta bort '&timewindow={timewindow}'
+    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station}'
     response = requests.get(api_url)
     realtidsdata = response.json()
 
     # Returnera realtidsdatan till en resultatvy
     return render_template('realtid_result.html', realtidsdata=realtidsdata)
 
-
+# Vad som behövs göras:
+# - Fixa så att SiteId hämtas korrekt
+# - Endpoint ska ändras till SiteId och inte angivet sökord.
+# - Pandas för snyggare utskrift?
+# - Centrerad text/sortering av resehåll/fordon?
 ####################################################################################################
 
 # Priser-sidan
