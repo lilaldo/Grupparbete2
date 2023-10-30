@@ -34,10 +34,6 @@ def reseplanerare():
 
     return render_template('reseplanerare.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
 
 # Realtid-sidan
 @app.route('/realtid')
