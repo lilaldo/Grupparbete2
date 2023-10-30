@@ -5,15 +5,22 @@
     <div class="row">
         <div class="col text-center">
             <h1>REALTID</h1>
-            <form action="/realtid" method="GET" class="text-center">
+            <form action="/realtid_result" method="GET" class="text-center">
                 <div class="form-group">
-                    <input type="text" id="siteid" name="siteid" class="form-control" style="margin-top: 10px;" required placeholder="Station">
+                    <input type="text" id="station" name="station" class="form-control" style="margin-top: 10px;" required placeholder="Station">
                 </div>
                 <div class="form-group">
                     <input type="text" id="time_window" name="time_window" class="form-control" style="margin-top: 10px;" required placeholder="När">
                 </div>
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sök</button>
             </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {{data|safe}}
         </div>
     </div>
 </div>
