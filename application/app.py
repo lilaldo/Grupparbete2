@@ -14,8 +14,8 @@ def reseplanerare():
         # Anropa SL:s API för att hämta alternativ baserat på användarens inmatning
         start = request.form.get('origin')
         destination = request.form.get('destination')
-        api_key = '94e3fbf21ad242778aef5106d11e7cea'
-        api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={api_key}&originId={start}&destId={destination}'
+        rese_apikey = '94e3fbf21ad242778aef5106d11e7cea'
+        api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={rese_apikey}&originId={start}&destId={destination}'
         response = requests.get(api_url)
         data = response.json()
 
@@ -38,8 +38,20 @@ def search():
 # Realtid-sidan
 @app.route('/realtid', methods=['GET', 'POST'])
 def realtid():
-    api_key = 'a8a250f2c2634381a8065817445217d5'
-    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={api_key}&siteid=DIN_SITE_ID&timewindow=DIN_TIME_WINDOW'
+    if request.method == 'POST':
+        # Hämta användarens inmatning från formuläret
+        station = request.form.get('station')
+        time_window = request.form.get('time_window')
+        real_apikey = 'a8a250f2c2634381a8065817445217d5'
+        # Gör en API-förfrågan för realtidsavgångar
+        api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station}&timewindow={time_window}'
+        response = requests.get(api_url)
+        data = response.json()
+        # Bearbeta realtidsresultaten här
+
+        return render_template('realtid.html', realtidsdata=data)
+
+    # Om det är en GET-förfrågan, visa sidan för användaren
     return render_template('realtid.html')
 
 
