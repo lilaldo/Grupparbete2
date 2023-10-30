@@ -89,7 +89,7 @@ def realtid_result():
     response = requests.get(api_url)
     realtidsdata = response.json()
 
-    # Returnera realtidsdatan till en resultatvy
+    # Returnera realtidsdatan till en resultatvy.
     return render_template('realtid_result.html', realtidsdata=realtidsdata)
 
 # Vad som behövs göras:
