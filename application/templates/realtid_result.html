@@ -9,9 +9,6 @@
                 <div class="form-group">
                     <input type="text" id="station" name="station" class="form-control" style="margin-top: 10px;" required placeholder="Station">
                 </div>
-                <div class="form-group">
-                    <input type="text" id="time_window" name="time_window" class="form-control" style="margin-top: 10px;" required placeholder="När">
-                </div>
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sök</button>
             </form>
         </div>
@@ -20,7 +17,21 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            {{data|safe}}
+            <ul>
+                {% if realtidsdata and realtidsdata.ResponseData %}
+                {% for metro in realtidsdata.ResponseData.Metros %}
+                <li>{{ metro.DisplayTime }}: Tunnelbana {{ metro.LineNumber }} till {{ metro.Destination }}</li>
+                {% endfor %}
+                {% for bus in realtidsdata.ResponseData.Buses %}
+                <li>{{ bus.DisplayTime }}: Buss {{ bus.LineNumber }} till {{ bus.Destination }}</li>
+                {% endfor %}
+                {% for tram in realtidsdata.ResponseData.Trams %}
+                <li>{{ tram.DisplayTime }}: Spårvagn {{ tram.LineNumber }} till {{ tram.Destination }}</li>
+                {% endfor %}
+                {% else %}
+                <li>Ingen data tillgänglig.</li>
+                {% endif %}
+            </ul>
         </div>
     </div>
 </div>

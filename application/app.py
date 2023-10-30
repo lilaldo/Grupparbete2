@@ -32,14 +32,17 @@ def search():
         results = request.args.get('results')
         return render_template('search.html', results=results)
 
+##############################################################################################
 
 siteid_dict = {}
 
 @app.route('/realtid', methods=['POST','GET'])
 def realtid():
     if request.method == 'POST':
+        # Hämta användarens inmatning från api
         station = request.form.get('station')
-        time_window = request.form.get('time_window')
+
+        # Kontrollera om stationen redan finns i siteid
         if station in siteid_dict:
             siteid = siteid_dict[station]
         else:
@@ -56,31 +59,25 @@ def realtid():
                 # Lagra siteid i din dictionary
                 siteid_dict[station] = siteid
             else:
-                # Om ingen data hittades för stationen, omdirigera användaren
+                # Om ingen data hittades för stationen, led om användaren
                 return redirect(url_for('realtid'))
 
-        # Nu har du siteid för användarens station
-        # Använd detta för att göra en API-förfrågan för realtidsinformation
+
         real_apikey = 'a8a250f2c2634381a8065817445217d5'
-        real_api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={siteid}&timewindow={time_window}'
+        real_api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={siteid}'
         response = requests.get(real_api_url)
         realtidsdata = response.json()
 
         return render_template('realtid.html', realtidsdata=realtidsdata)
 
-    # Om det är en GET-förfrågan, visa sidan för användaren
     return render_template('realtid.html')
 
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
-    siteid = request.args.get('siteid')
-    timewindow = request.args.get('timewindow')
+    station = request.args.get('station') '
 
-    print(f"SiteId: {siteid}, TimeWindow: {timewindow}")
-
-    # Nu kan du göra API-anropet för realtidsförfrågningen
     real_apikey = 'a8a250f2c2634381a8065817445217d5'
-    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={siteid}&timewindow={timewindow}'
+    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station}'  # Ta bort '&timewindow={timewindow}'
     response = requests.get(api_url)
     realtidsdata = response.json()
 
@@ -88,6 +85,7 @@ def realtid_result():
     return render_template('realtid_result.html', realtidsdata=realtidsdata)
 
 
+####################################################################################################
 
 # Priser-sidan
 @app.route('/priser')
