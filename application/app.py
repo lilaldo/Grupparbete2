@@ -8,9 +8,7 @@ app = Flask(__name__)
 # Första sidan
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-from flask import Flask, render_template, request, jsonify
+    return render_template('reseplanerare.html')
 
 
 @app.route('/')
@@ -40,17 +38,20 @@ def realtid():
     # Lägg till logik för Realtid-sidan här
     return render_template('realtid.html')
 
+
 # Priser-sidan
 @app.route('/priser')
 def priser():
     # Lägg till logik för Priser-sidan här
     return render_template('priser.html')
 
+
 # Trafikläge-sidan
 @app.route('/trafiklage')
 def trafiklage():
     # Lägg till logik för Trafikläge-sidan här
     return render_template('trafiklage.html')
+
 
 # Sökrutin för reseplanerare-sidan
 
