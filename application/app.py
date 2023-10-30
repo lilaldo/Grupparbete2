@@ -14,7 +14,7 @@ def reseplanerare():
         # Anropa SL:s API för att hämta alternativ baserat på användarens inmatning
         start = request.form.get('origin')
         destination = request.form.get('destination')
-        api_key = '94e3fbf21ad242778aef5106d11e7cea'  # Uppdatera med din korrekta API-nyckel
+        api_key = '94e3fbf21ad242778aef5106d11e7cea'
         api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={api_key}&originId={start}&destId={destination}'
         response = requests.get(api_url)
         data = response.json()
