@@ -1,5 +1,5 @@
-from flask import Flask, render_template, json
-import request
+from flask import Flask, render_template, request
+import json
 
 app = Flask(__name__)
 
@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Första sidan
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('reseplanerare.html')
 
 
 @app.route('/')
@@ -32,12 +32,12 @@ def reseplanerare():
     return render_template('reseplanerare.html')
 
 
-
 # Realtid-sidan
 @app.route('/realtid')
 def realtid():
     # Lägg till logik för Realtid-sidan här
     return render_template('realtid.html')
+
 
 # Priser-sidan
 @app.route('/priser')
@@ -45,11 +45,13 @@ def priser():
     # Lägg till logik för Priser-sidan här
     return render_template('priser.html')
 
+
 # Trafikläge-sidan
 @app.route('/trafiklage')
 def trafiklage():
     # Lägg till logik för Trafikläge-sidan här
     return render_template('trafiklage.html')
+
 
 # Sökrutin för reseplanerare-sidan
 
