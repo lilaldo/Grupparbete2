@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify
-import requests
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, json
+import request
 
 app = Flask(__name__)
+
 
 
 # Första sidan
@@ -10,9 +10,6 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-from flask import Flask, render_template, request, jsonify
-
-app = Flask(__name__)
 
 @app.route('/')
 @app.route('/reseplanerare', methods=['GET', 'POST'])
@@ -24,18 +21,15 @@ def reseplanerare():
 
         # Använd SL:s API för att hämta reseplanen
         api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={api_key}&originId={origin}&destId={destination}'
-        response = requests.get(api_url)
+        response = request.get(api_url)
         data = response.json()
 
         # Hantera API-svar och skapa en användbar reseplan
         # Du måste anpassa detta beroende på API-svaret och ditt användningsfall.
 
-        return jsonify(data)
+        return json(data)
 
     return render_template('reseplanerare.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 
 
