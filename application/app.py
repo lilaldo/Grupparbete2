@@ -19,7 +19,7 @@ def reseplanerare():
         response = requests.get(api_url)
         data = response.json()
 
-        # Hämta alternativen från API-svaret
+        # KOD
         station_options = [station['Name'] for station in data.get('ResponseData', [])]
 
         return render_template('reseplanerare.html', station_options=station_options)
@@ -29,7 +29,6 @@ def reseplanerare():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        # Hantera POST-förfrågan (om det behövs)
         pass
     else:
         results = request.args.get('results')
@@ -37,23 +36,24 @@ def search():
 
 
 # Realtid-sidan
-@app.route('/realtid')
+@app.route('/realtid', methods=['GET', 'POST'])
 def realtid():
-    # Lägg till logik för Realtid-sidan här
+    api_key = 'a8a250f2c2634381a8065817445217d5'
+    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={api_key}&siteid=DIN_SITE_ID&timewindow=DIN_TIME_WINDOW'
     return render_template('realtid.html')
 
 
 # Priser-sidan
 @app.route('/priser')
 def priser():
-    # Lägg till logik för Priser-sidan här
+    # KOD
     return render_template('priser.html')
 
 
 # Trafikläge-sidan
 @app.route('/trafiklage')
 def trafiklage():
-    # Lägg till logik för Trafikläge-sidan här
+    # KOD
     return render_template('trafiklage.html')
 
 
