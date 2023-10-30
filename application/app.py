@@ -38,11 +38,8 @@ siteid_dict = {}
 @app.route('/realtid', methods=['POST','GET'])
 def realtid():
     if request.method == 'POST':
-        # Hämta användarens inmatning från formuläret
         station = request.form.get('station')
         time_window = request.form.get('time_window')
-
-        # Kontrollera om stationen redan finns i ditt lager av siteid
         if station in siteid_dict:
             siteid = siteid_dict[station]
         else:
@@ -69,8 +66,6 @@ def realtid():
         response = requests.get(real_api_url)
         realtidsdata = response.json()
 
-        # Bearbeta realtidsresultaten här
-
         return render_template('realtid.html', realtidsdata=realtidsdata)
 
     # Om det är en GET-förfrågan, visa sidan för användaren
@@ -78,8 +73,6 @@ def realtid():
 
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
-    # Här hämtar du datan för realtidsförfrågningen och processar den
-    # T.ex., genom att använda request.args för att hämta parametrar från URL
     siteid = request.args.get('siteid')
     timewindow = request.args.get('timewindow')
 
