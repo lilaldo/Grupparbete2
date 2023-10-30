@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Sökresultat{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1>Sökresultat</h1>
+            <div id="results">
+                <pre>{{ results|tojson }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

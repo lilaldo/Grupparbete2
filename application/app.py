@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request
-import json
+from flask import Flask, request, render_template, jsonify  # Ensure you import jsonify
+import requests
+
 
 app = Flask(__name__)
 
@@ -10,28 +11,36 @@ app = Flask(__name__)
 @app.route('/reseplanerare', methods=['GET', 'POST'])
 def reseplanerare():
     if request.method == 'POST':
-        api_key = '8fa2feecea3240138c2474a4d9a83845'
-        origin = request.form.get('origin')
+        # Anropa SL:s API för att hämta alternativ baserat på användarens inmatning
+        start = request.form.get('origin')
         destination = request.form.get('destination')
-
-        # Använd SL:s API för att hämta reseplanen
-        api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={api_key}&originId={origin}&destId={destination}'
-        response = request.get(api_url)
+        api_key = '94e3fbf21ad242778aef5106d11e7cea'  # Uppdatera med din korrekta API-nyckel
+        api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={api_key}&originId={start}&destId={destination}'
+        response = requests.get(api_url)
         data = response.json()
 
-        # Hantera API-svar och skapa en användbar reseplan
-        # Du måste anpassa detta beroende på API-svaret och ditt användningsfall.
+        # Hämta alternativen från API-svaret
+        station_options = [station['Name'] for station in data.get('ResponseData', [])]
 
-        return json(data)
+        return render_template('reseplanerare.html', station_options=station_options)
 
     return render_template('reseplanerare.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        # Hantera POST-förfrågan (om det behövs)
+        pass
+    else:
+        results = request.args.get('results')
+        return render_template('search.html', results=results)
 
 
 # Realtid-sidan
 @app.route('/realtid')
 def realtid():
     # Lägg till logik för Realtid-sidan här
-    return render_template('reseplanerare.html')
+    return render_template('realtid.html')
 
 
 # Priser-sidan

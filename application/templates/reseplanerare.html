@@ -1,17 +1,22 @@
 {% extends "layout.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Reseplanerare{% endblock %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="text-center">RES MED OSS.</h1>
-                <form action="/search" method="POST">
-                    <input type="text" name="origin" placeholder="Ursprung">
-                    <input type="text" name="destination" placeholder="Destination">
-                    <button type="submit">Sök</button>
-                </form>
-                {{data|safe}}
-            </div>    
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1>RES MED OSS.</h1>
+            <form action="/search" method="POST" class="text-center"> <!-- Uppdaterad action till /search -->
+                <div class="form-group">
+                    <input list="stations" name="origin" placeholder="Från" class="form-control">
+                    <datalist id="stations"></datalist>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="text" name="destination" placeholder="Till" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sök</button>
+            </form>
+            <div id="results"></div>
         </div>
     </div>
+</div>
 {% endblock %}
