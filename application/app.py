@@ -5,12 +5,7 @@ app = Flask(__name__)
 
 
 
-# Första sidan
-@app.route('/')
-def index():
-    return render_template('reseplanerare.html')
-
-
+# Förstasidan samt reseplaneraren.
 @app.route('/')
 @app.route('/reseplanerare', methods=['GET', 'POST'])
 def reseplanerare():
@@ -36,7 +31,7 @@ def reseplanerare():
 @app.route('/realtid')
 def realtid():
     # Lägg till logik för Realtid-sidan här
-    return render_template('realtid.html')
+    return render_template('reseplanerare.html')
 
 
 # Priser-sidan
@@ -51,9 +46,6 @@ def priser():
 def trafiklage():
     # Lägg till logik för Trafikläge-sidan här
     return render_template('trafiklage.html')
-
-
-# Sökrutin för reseplanerare-sidan
 
 
 if __name__ == '__main__':
