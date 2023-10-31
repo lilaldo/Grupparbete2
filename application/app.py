@@ -74,7 +74,7 @@ def realtid():
 
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
-    station = request.args.get('station') '
+    station = request.args.get('station')
 
     real_apikey = 'a8a250f2c2634381a8065817445217d5'
     api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station}'  # Ta bort '&timewindow={timewindow}'
