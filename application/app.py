@@ -94,7 +94,9 @@ def realtid():
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
     station = request.args.get('station')
-    # Problem: endpoint svarar inte å,ä,ö. Kod för att ersätta dessa har lagts till och därmed resulterat i 200 :)
+    # Problem/fixat: endpoint svarar inte på mellanrum. Ordnat nu.
+    station = quote(station)
+    # Problem/fixat: endpoint svarar inte å, ä, ö. Kod för att ersätta dessa har lagts till och därmed resulterat i 200 :)
     station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
     url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
     stat = urlopen(url1)
