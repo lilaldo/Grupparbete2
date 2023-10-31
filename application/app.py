@@ -129,10 +129,25 @@ def priser():
 
 
 # Trafikläge-sidan
-@app.route('/trafiklage')
+@app.route('/trafiklage', methods=['POST','GET'])
 def trafiklage():
-    # KOD
-    return render_template('trafiklage.html')
+
+    error_message = ""  # Initsierar error_message som en tom sträng
+    # Ange API-endpointen för trafikinformation (exempel)
+    trinfo_apikey = '854b0bee7c2841dfbcb36e421c4616f0'
+    api_url = f'https://api.sl.se/api2/trafficsituation.json?key={trinfo_apikey}'
+
+    # Gör en HTTP-förfrågan till trafikinformationstjänsten
+    response = requests.get(api_url)
+
+    # Kontrollera om förfrågan var framgångsrik (HTTP-statuskod 200)
+    if response.status_code == 200:
+        traffic_data = response.json()  # Förutsatt att svaret är i JSON-format
+    else:
+        error_message = "Kunde inte hämta trafikinformation."
+        traffic_data = None
+
+    return render_template('trafiklage.html', traffic_data=traffic_data, error_message=error_message)
 
 
 if __name__ == '__main__':
