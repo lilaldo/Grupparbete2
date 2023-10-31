@@ -1,7 +1,9 @@
 from flask import Flask, request, render_template, jsonify  # Ensure you import jsonify
-import requests
+import requests, json
+from urllib.request import urlopen
 import json
 from urllib.request import urlopen
+from urllib.parse import quote
 
 app = Flask(__name__)
 
@@ -46,6 +48,7 @@ def realtid():
     if request.method == 'POST':
         # Svaret hämtas och lagras i variabeln.
         station = request.form.get('station')
+        az_station = quote(station, safe='')
 
         url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
         stat = urlopen(url1)
@@ -58,7 +61,7 @@ def realtid():
             siteid = siteid_dict[station]
         # Om inte så görs en förfrågan till api för att hämta SiteId
         else:
-            # Lagring av api-key för att att hämta alla hållplatser.
+            # Lagring av api-key för att hämta alla hållplatser.
             api_key = '045de5f58ee24c00ae94d24c4c958908'
             station_input = station
             api_url = f'https://api.sl.se/api2/LineData.json?model=site&key={api_key}&stopAreaName={station_id}'
@@ -91,6 +94,8 @@ def realtid():
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
     station = request.args.get('station')
+    # Problem: endpoint svarar inte å,ä,ö. Kod för att ersätta dessa har lagts till och därmed resulterat i 200 :)
+    station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
     url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
     stat = urlopen(url1)
     stat1 = json.loads(stat.read().decode("utf-8"))
@@ -105,11 +110,13 @@ def realtid_result():
     # Returnera realtidsdatan till en resultatvy.
     return render_template('realtid_result.html', realtidsdata=realtidsdata)
 
-# Vad som behövs göras:
+
+# Vad som behövs göras/Problem som stötts på:
 # - Fixa så att SiteId hämtas korrekt
 # - Endpoint ska ändras till SiteId och inte angivet sökord.
 # - Pandas för snyggare utskrift?
 # - Centrerad text/sortering av resehåll/fordon?
+# - Cookies?
 ####################################################################################################
 
 # Priser-sidan
