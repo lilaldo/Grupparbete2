@@ -1,5 +1,7 @@
 from flask import Flask, request, render_template, jsonify  # Ensure you import jsonify
 import requests
+import json
+from urllib.request import urlopen
 
 app = Flask(__name__)
 
@@ -45,6 +47,12 @@ def realtid():
         # Svaret hämtas och lagras i variabeln.
         station = request.form.get('station')
 
+        url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
+        stat = urlopen(url1)
+        stat1 = json.loads(stat.read().decode("utf-8"))
+        stat2 = stat1["ResponseData"]
+        station_id = stat2[0]['SiteId']
+
         # kontrollerar om stationen redan finns i dict.
         if station in siteid_dict:
             siteid = siteid_dict[station]
@@ -53,7 +61,7 @@ def realtid():
             # Lagring av api-key för att att hämta alla hållplatser.
             api_key = '045de5f58ee24c00ae94d24c4c958908'
             station_input = station
-            api_url = f'https://api.sl.se/api2/LineData.json?model=site&key={api_key}&stopAreaName={station}'
+            api_url = f'https://api.sl.se/api2/LineData.json?model=site&key={api_key}&stopAreaName={station_id}'
             # ... Och läser dessa om json.
             response = requests.get(api_url)
             data = response.json()
@@ -69,7 +77,7 @@ def realtid():
 
         # Lagring av api-key för att hämta tidtabell i realtid.
         real_apikey = 'a8a250f2c2634381a8065817445217d5'
-        real_api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={siteid}'
+        real_api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station_id}'
         response = requests.get(real_api_url)
         realtidsdata = response.json()
 
@@ -83,9 +91,14 @@ def realtid():
 @app.route('/realtid_result', methods=['POST','GET'])
 def realtid_result():
     station = request.args.get('station')
+    url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
+    stat = urlopen(url1)
+    stat1 = json.loads(stat.read().decode("utf-8"))
+    stat2 = stat1["ResponseData"]
+    station_id = stat2[0]['SiteId']
     # Api för att hämta realtids-svaret och leverera denna igen på denna endpoint, fast hämtat.
     real_apikey = 'a8a250f2c2634381a8065817445217d5'
-    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station}'
+    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station_id}'
     response = requests.get(api_url)
     realtidsdata = response.json()
 
