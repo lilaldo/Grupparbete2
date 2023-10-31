@@ -1,15 +1,16 @@
 {% extends "layout.html" %}
 {% block title %}TRAFIKLÄGE{% endblock %}
 {% block content %}
-<h1>Trafikläge i Stockholm</h1>
-{% if error_message %}
-<p>{{ error_message }}</p>
-{% endif %}
-{% if traffic_data %}
-<ul>
-    <li><strong>Statuskod:</strong> {{ traffic_data['Statuscode'] }}</li>
-    <li><strong>Meddelande:</strong> {{ traffic_data['Message'] }}</li>
-    <!-- Om det finns fler fält i trafikinformationen, kan du lägga till dem här -->
-</ul>
-{% endif %}
+    <h1>Trafikläge i Stockholm</h1>
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+    {% endif %}
+    {% if traffic_data is defined %}
+    <ul>
+        <li><strong>Statuskod:</strong> {{ traffic_data['Statuscode'] }}</li>
+        <li><strong>Meddelande:</strong> {{ traffic_data['Message'] }}</li>
+    </ul>
+    {% else %}
+    <p>Kunde inte hämta trafikinformation.</p>
+    {% endif %}
 {% endblock %}
