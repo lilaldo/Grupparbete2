@@ -1,8 +1,8 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify  # Ensure you import jsonify
 import requests, json
 from urllib.request import urlopen
 import json
-# from urllib.request import urlopen
+from urllib.request import urlopen
 from urllib.parse import quote
 
 app = Flask(__name__)
@@ -122,14 +122,14 @@ def realtid_result():
 ####################################################################################################
 
 # Priser-sidan
-"""@app.route('/priser')
+@app.route('/priser')
 def priser():
     # KOD
-    return render_template('priser.html')"""
+    return render_template('priser.html')
 
 
 # Trafikläge-sidan
-@app.route('/trafiklage', methods=['GET'])
+@app.route('/trafiklage', methods=['POST','GET'])
 def trafiklage():
 
     error_message = ""  # Initsierar error_message som en tom sträng
@@ -138,14 +138,13 @@ def trafiklage():
     api_url = f'https://api.sl.se/api2/trafficsituation.json?key={trinfo_apikey}'
 
     # Gör en HTTP-förfrågan till trafikinformationstjänsten
-    traffic_data = {}
     response = requests.get(api_url)
-    if response.status_code == 200:
-       traffic_data = response.json()
-    
+
     # Kontrollera om förfrågan var framgångsrik (HTTP-statuskod 200)
-    if response.status_code != 200:
-        error_message = "Kunde inte hämta trafikinformation. HTTP-statuskod: {}".format(response.status_code)
+    if response.status_code == 200:
+        traffic_data = response.json()  # Förutsatt att svaret är i JSON-format
+    else:
+        error_message = "Kunde inte hämta trafikinformation."
         traffic_data = None
 
     return render_template('trafiklage.html', traffic_data=traffic_data, error_message=error_message)

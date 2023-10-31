@@ -1,16 +1,35 @@
 {% extends "layout.html" %}
-{% block title %}TRAFIKLÄGE{% endblock %}
+{% block title %}Trafikläge{% endblock %}
 {% block content %}
-    <h1>Trafikläge i Stockholm</h1>
-    {% if error_message %}
-    <p>{{ error_message }}</p>
-    {% endif %}
-    {% if traffic_data is defined %}
-    <ul>
-        <li><strong>Statuskod:</strong> {{ traffic_data['Statuscode'] }}</li>
-        <li><strong>Meddelande:</strong> {{ traffic_data['Message'] }}</li>
-    </ul>
-    {% else %}
-    <p>Kunde inte hämta trafikinformation.</p>
-    {% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1>Trafikläge</h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <ul>
+                {% if traffic_data and traffic_data.ResponseData %}
+                {% for traffic_type in traffic_data.ResponseData.TrafficTypes %}
+                <li>
+                    <h5>{{ traffic_type.Name }}</h5>
+                    <ul>
+                        {% for event in traffic_type.Events %}
+                        <li>
+                            {{ event.Message | safe }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+                {% else %}
+                <li>Ingen trafikinformation tillgänglig.</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
 {% endblock %}
