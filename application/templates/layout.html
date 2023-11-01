@@ -7,6 +7,16 @@
         {% block title %}title{% endblock %}
         </title>
         <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: black;
+                background-image: url("/static/IMG/111.jpg");
+                background-size: 100% auto; /* Anpassar bilden till hela sidans bredd */
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+        </style>
     </head>
     <body>
         <div id="header">
@@ -17,6 +27,13 @@
         </div>
         <div id="footer">
             {% block footer %}{% include "footer.html" %}{% endblock %}
+            <style>
+                #footer {
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                }
+            </style>
         </div>
         <script src="/static/js/bootstrap.min.js"></script>
     </body>

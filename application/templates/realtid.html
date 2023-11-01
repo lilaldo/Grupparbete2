@@ -3,13 +3,13 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col text-center">
+        <div class="col text-center" style="color: white; margin-top: 120px">
             <h1>REALTID</h1>
             <form action="{{ url_for('realtid_result') }}" method="GET" class="text-center">
                 <div class="form-group">
-                    <input type="text" id="station" name="station" class="form-control" style="margin-top: 10px;" required placeholder="Station">
+                    <input type="text" id="station" name="station" class="form-control" style="margin-top: 20px; text-align: center;" required placeholder="Station">
                 </div>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sök</button>
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 120px;">Sök</button>
             </form>
         </div>
     </div>
