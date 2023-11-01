@@ -7,7 +7,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-
+##############################################################################################
 # Förstasidan samt reseplaneraren.
 @app.route('/')
 @app.route('/reseplanerare', methods=['GET', 'POST'])
@@ -28,6 +28,7 @@ def reseplanerare():
 
     return render_template('reseplanerare.html')
 
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
@@ -36,24 +37,32 @@ def search():
         results = request.args.get('results')
         return render_template('search.html', results=results)
 
+
 ##############################################################################################
 
 # Dict för att lagra SiteId.
 siteid_dict = {}
 
+
 # Endpoint för realtid via navbar.
-@app.route('/realtid', methods=['POST','GET'])
+@app.route('/realtid', methods=['POST', 'GET'])
 def realtid():
-    # Hämtar användarens inmatning i sökfältey.
+    # Hämtar användarens inmatning i sökfältet.
     if request.method == 'POST':
         # Svaret hämtas och lagras i variabeln.
         station = request.form.get('station')
+        # Variabel som gör att koden kan hantera mellanrum m.m
         az_station = quote(station, safe='')
 
+        # Skapar url för att göra en GET från SL:s api och hämtar rätt value beroende på vad användaren skriver in.
         url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
+        # urlopen används för att öppna och hämta resultat för url1.
         stat = urlopen(url1)
+        # Läser json-data från api-svaret sedan omvandlas json till python dict som sedan lagras i variabeln.
         stat1 = json.loads(stat.read().decode("utf-8"))
+        # Relevant del av svaret från api läses av och lagras i en ny variabel.
         stat2 = stat1["ResponseData"]
+        # SiteId lagras i variabel:
         station_id = stat2[0]['SiteId']
 
         # kontrollerar om stationen redan finns i dict.
@@ -77,7 +86,6 @@ def realtid():
                 # Om ingen datat hittas så skickar användaren tillbaka.
                 return redirect('/realtid')
 
-
         # Lagring av api-key för att hämta tidtabell i realtid.
         real_apikey = 'a8a250f2c2634381a8065817445217d5'
         real_api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station_id}'
@@ -88,10 +96,21 @@ def realtid():
         return render_template('realtid.html', realtidsdata=realtidsdata)
     # # Om ingen datat hittas så skickar användaren tillbaka.
     return render_template('realtid.html')
-###########################
-#########
+
+
+##############################################################################################
+# TEST - sortera efter avgångstid.
+def convert_display_time(display_time):
+    if display_time == "Nu":
+        return 0
+    elif "min" in display_time:
+        return int(display_time.split()[0])
+    else:
+        time_obj = datetime.strptime(display_time, "%H:%M")
+        return time_obj.hour * 60 + time_obj.minute
+
 # Endpoint för resultat av realtids-sökningen.
-@app.route('/realtid_result', methods=['POST','GET'])
+@app.route('/realtid_result', methods=['POST', 'GET'])
 def realtid_result():
     station = request.args.get('station')
     # Problem/fixat: endpoint svarar inte på mellanrum. Ordnat nu.
@@ -109,7 +128,9 @@ def realtid_result():
     response = requests.get(api_url)
     realtidsdata = response.json()
 
-    realtids_df = pd.DataFrame(realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"]["Trams"])
+    realtids_df = pd.DataFrame(
+        realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"][
+            "Trams"])
 
     # Skapa DataFrames för varje färdmedelstyp
     tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
@@ -126,18 +147,19 @@ def realtid_result():
     buss_data = buss_df.to_dict(orient="records")
     sparvagn_data = sparvagn_df.to_dict(orient="records")
 
-    # Sortera listorna efter DisplayTime
-    tunnelbana_data.sort(key=lambda x: x["DisplayTime"])
-    buss_data.sort(key=lambda x: x["DisplayTime"])
-    sparvagn_data.sort(key=lambda x: x["DisplayTime"])
+    # TEST - sortera efter avgångstid.
+    tunnelbana_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
+    buss_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
+    sparvagn_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
 
-    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, sparvagn_data=sparvagn_data)
+    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data,
+                           sparvagn_data=sparvagn_data)
 
 
 # Vad som behövs göras/Problem som stötts på:
 # - Pandas för snyggare utskrift?
 # - Cookies?
-####################################################################################################
+##############################################################################################
 
 # Priser-sidan
 @app.route('/priser')
@@ -145,11 +167,10 @@ def priser():
     # KOD
     return render_template('priser.html')
 
-
+##############################################################################################
 # Trafikläge-sidan
-@app.route('/trafiklage', methods=['POST','GET'])
+@app.route('/trafiklage', methods=['POST', 'GET'])
 def trafiklage():
-
     error_message = ""  # Initsierar error_message som en tom sträng
     # Ange API-endpointen för trafikinformation (exempel)
     trinfo_apikey = '854b0bee7c2841dfbcb36e421c4616f0'
