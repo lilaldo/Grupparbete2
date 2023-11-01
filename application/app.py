@@ -3,6 +3,7 @@ import requests, json
 from urllib.request import urlopen
 from urllib.parse import quote
 from datetime import datetime
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -87,7 +88,7 @@ def realtid():
         return render_template('realtid.html', realtidsdata=realtidsdata)
     # # Om ingen datat hittas så skickar användaren tillbaka.
     return render_template('realtid.html')
-
+###########################
 #########
 # Endpoint för resultat av realtids-sökningen.
 @app.route('/realtid_result', methods=['POST','GET'])
@@ -108,8 +109,29 @@ def realtid_result():
     response = requests.get(api_url)
     realtidsdata = response.json()
 
-    # Returnera realtidsdatan till en resultatvy.
-    return render_template('realtid_result.html', realtidsdata=realtidsdata)
+    realtids_df = pd.DataFrame(realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"]["Trams"])
+
+    # Skapa DataFrames för varje färdmedelstyp
+    tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
+    buss_df = realtids_df[realtids_df["TransportMode"] == "BUS"]
+    sparvagn_df = realtids_df[realtids_df["TransportMode"] == "TRAM"]
+
+    # Sortera DataFrames efter tid (DisplayTime)
+    tunnelbana_df = tunnelbana_df.sort_values(by="DisplayTime")
+    buss_df = buss_df.sort_values(by="DisplayTime")
+    sparvagn_df = sparvagn_df.sort_values(by="DisplayTime")
+
+    # Konvertera DataFrames till listor med dictionarys
+    tunnelbana_data = tunnelbana_df.to_dict(orient="records")
+    buss_data = buss_df.to_dict(orient="records")
+    sparvagn_data = sparvagn_df.to_dict(orient="records")
+
+    # Sortera listorna efter DisplayTime
+    tunnelbana_data.sort(key=lambda x: x["DisplayTime"])
+    buss_data.sort(key=lambda x: x["DisplayTime"])
+    sparvagn_data.sort(key=lambda x: x["DisplayTime"])
+
+    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, sparvagn_data=sparvagn_data)
 
 
 # Vad som behövs göras/Problem som stötts på:

@@ -17,22 +17,32 @@
 <div class="container">
     <div class="row">
         <div class="col">
+            <h3 style="color: white;">Tunnelbana</h3>
             <ul>
-                {% if realtidsdata and realtidsdata.ResponseData %}
-                {% for metro in realtidsdata.ResponseData.Metros %}
-                <li>{{ metro.DisplayTime }}: Tunnelbana {{ metro.LineNumber }} till {{ metro.Destination }}</li>
+                {% for item in tunnelbana_data %}
+                <li style="color: white;">{{ item.DisplayTime }}: {{ item.Destination }}</li>
                 {% endfor %}
-                {% for bus in realtidsdata.ResponseData.Buses %}
-                <li>{{ bus.DisplayTime }}: Buss {{ bus.LineNumber }} till {{ bus.Destination }}</li>
+            </ul>
+        </div>
+
+        <div class="col">
+            <h3 style="color: white;">Buss</h3>
+            <ul>
+                {% for item in buss_data %}
+                <li style="color: white;">{{ item.DisplayTime }}: {{ item.Destination }}</li>
                 {% endfor %}
-                {% for tram in realtidsdata.ResponseData.Trams %}
-                <li>{{ tram.DisplayTime }}: Spårvagn {{ tram.LineNumber }} till {{ tram.Destination }}</li>
+            </ul>
+        </div>
+
+        <div class="col">
+            <h3 style="color: white;">Spårvagn</h3>
+            <ul>
+                {% for item in sparvagn_data %}
+                <li style="color: white;">{{ item.DisplayTime }}: {{ item.Destination }}</li>
                 {% endfor %}
-                {% else %}
-                <li>Ingen data tillgänglig.</li>
-                {% endif %}
             </ul>
         </div>
     </div>
 </div>
 {% endblock %}
+
