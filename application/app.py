@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template, jsonify  # Ensure you import jsonify
 import requests, json
 from urllib.request import urlopen
-import json
-from urllib.request import urlopen
 from urllib.parse import quote
 
 app = Flask(__name__)
@@ -114,8 +112,6 @@ def realtid_result():
 
 
 # Vad som behövs göras/Problem som stötts på:
-# - Fixa så att SiteId hämtas korrekt
-# - Endpoint ska ändras till SiteId och inte angivet sökord.
 # - Pandas för snyggare utskrift?
 # - Centrerad text/sortering av resehåll/fordon?
 # - Cookies?
