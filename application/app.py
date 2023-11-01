@@ -100,14 +100,14 @@ def realtid():
 
 ##############################################################################################
 # TEST - sortera efter avgångstid.
-def convert_display_time(display_time):
+"""def convert_display_time(display_time):
     if display_time == "Nu":
         return 0
     elif "min" in display_time:
         return int(display_time.split()[0])
     else:
         time_obj = datetime.strptime(display_time, "%H:%M")
-        return time_obj.hour * 60 + time_obj.minute
+        return time_obj.hour * 60 + time_obj.minute"""
 
 # Endpoint för resultat av realtids-sökningen.
 @app.route('/realtid_result', methods=['POST', 'GET'])
@@ -148,13 +148,17 @@ def realtid_result():
     sparvagn_data = sparvagn_df.to_dict(orient="records")
 
     # TEST - sortera efter avgångstid.
-    tunnelbana_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
+    tunnelbana_data.sort(key=lambda x: x["DisplayTime"])
+    buss_data.sort(key=lambda x: x["DisplayTime"])
+    sparvagn_data.sort(key=lambda x: x["DisplayTime"])
+
+    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, sparvagn_data=sparvagn_data)
+    """tunnelbana_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
     buss_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
     sparvagn_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
 
     return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data,
-                           sparvagn_data=sparvagn_data)
-
+                           sparvagn_data=sparvagn_data)"""
 
 # Vad som behövs göras/Problem som stötts på:
 # - Pandas för snyggare utskrift?
