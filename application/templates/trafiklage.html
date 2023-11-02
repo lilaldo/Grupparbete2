@@ -10,7 +10,8 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col" style="color: white; margin-top: 20px;">
+        <div class="bg-secondary text-white p-5 mb-5 mt-5">
+        <div class="col" style="color: white;">
             <ul>
                 {% if traffic_data and traffic_data.ResponseData %}
                 {% for traffic_type in traffic_data.ResponseData.TrafficTypes %}
@@ -29,6 +30,7 @@
                 <li>Ingen trafikinformation tillgänglig.</li>
                 {% endif %}
             </ul>
+        </div>
         </div>
     </div>
 </div>
