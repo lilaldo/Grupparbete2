@@ -17,32 +17,44 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <h3 style="color: white;">Tunnelbana</h3>
+            <div class="bg-secondary text-white p-5 mt-5">
+                <div class="col" style="color: white;">
+            <h3 style="color: white;" class="mb-5">Tunnelbana</h3>
             <ul>
                 {% for item in tunnelbana_data %}
                 <li style="color: white;">{{ item.DisplayTime }}: {{ item.Destination }}</li>
                 {% endfor %}
             </ul>
         </div>
+    </div>
+</div>
 
         <div class="col">
-            <h3 style="color: white;">Buss</h3>
+            <div class="bg-secondary text-white p-5 mt-5">
+                <div class="col" style="color: white;">
+            <h3 style="color: white;" class="mb-5">Buss</h3>
             <ul>
                 {% for item in buss_data %}
-                <li style="color: white;">{{ item.DisplayTime }}: {{ item.Destination }}</li>
+                <li style="color: white;">{{ item.DisplayTime }}: Nr {{item.LineNumber}} - {{ item.Destination }}</li>
                 {% endfor %}
             </ul>
         </div>
+    </div>
+</div>
 
         <div class="col">
-            <h3 style="color: white;">Spårvagn</h3>
+            <div class="bg-secondary text-white p-5 mt-5">
+                <div class="col" style="color: white;">
+            <h3 style="color: white;" class="mb-5">Pendeltåg</h3>
             <ul>
-                {% for item in sparvagn_data %}
+                {% for item in pendel_data %}
                 <li style="color: white;">{{ item.DisplayTime }}: {{ item.Destination }}</li>
                 {% endfor %}
             </ul>
         </div>
     </div>
+</div>
+</div>
 </div>
 {% endblock %}
 

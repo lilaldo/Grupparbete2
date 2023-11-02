@@ -135,30 +135,30 @@ def realtid_result():
 
     realtids_df = pd.DataFrame(
         realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"][
-            "Trams"]
+            "Trains"]
     )
 
     # Skapa DataFrames för varje färdmedelstyp
     tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
     buss_df = realtids_df[realtids_df["TransportMode"] == "BUS"]
-    sparvagn_df = realtids_df[realtids_df["TransportMode"] == "TRAM"]
+    pendel_df = realtids_df[realtids_df["TransportMode"] == "TRAIN"]
 
     # Sortera DataFrames efter tid (DisplayTime)
     tunnelbana_df = tunnelbana_df.sort_values(by="DisplayTime")
     buss_df = buss_df.sort_values(by="DisplayTime")
-    sparvagn_df = sparvagn_df.sort_values(by="DisplayTime")
+    pendel_df = pendel_df.sort_values(by="DisplayTime")
 
     # Konvertera DataFrames till listor med dictionaries
     tunnelbana_data = tunnelbana_df.to_dict(orient="records")
     buss_data = buss_df.to_dict(orient="records")
-    sparvagn_data = sparvagn_df.to_dict(orient="records")
+    pendel_data = pendel_df.to_dict(orient="records")
 
     # TEST - sortera efter avgångstid.
     tunnelbana_data.sort(key=lambda x: x["DisplayTime"])
     buss_data.sort(key=lambda x: x["DisplayTime"])
-    sparvagn_data.sort(key=lambda x: x["DisplayTime"])
+    pendel_data.sort(key=lambda x: x["DisplayTime"])
 
-    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, sparvagn_data=sparvagn_data)
+    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, pendel_data=pendel_data)
 
     # test för sortering av tider.
     """tunnelbana_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
