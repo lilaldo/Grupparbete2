@@ -3,14 +3,14 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col text-center" style="color: white;">
+        <div class="col text-center" style="color: white; margin-top: 20px;">
             <h1>Trafikläge</h1>
         </div>
     </div>
 </div>
 <div class="container">
     <div class="row">
-        <div class="col" style="color: white;">
+        <div class="col" style="color: white; margin-top: 20px;">
             <ul>
                 {% if traffic_data and traffic_data.ResponseData %}
                 {% for traffic_type in traffic_data.ResponseData.TrafficTypes %}
