@@ -42,7 +42,7 @@ def search():
 
         # Translate station names to SiteIds (you can include your code here)
         station1 = start_pos
-        station1 = station1.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
+        station1 = station1.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
         url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station1
         first_station = urlopen(url1)
         first_station_data = json.loads(first_station.read().decode("utf-8"))
@@ -54,7 +54,7 @@ def search():
 
         # få station2 (till) siteId
         station2 = end_pos
-        station2 = station2.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
+        station2 = station2.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
         url2 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station2
         second_station = urlopen(url2)
         second_station_data = json.loads(second_station.read().decode("utf-8"))
@@ -177,7 +177,7 @@ def realtid_result():
     # Problem/fixat: endpoint svarar inte på mellanrum. Ordnat nu.
     station = quote(station)
     # Problem/fixat: endpoint svarar inte å, ä, ö. Kod för att ersätta dessa har lagts till och därmed resulterat i 200 :)
-    station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o')
+    station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
     url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
     stat = urlopen(url1)
     stat1 = json.loads(stat.read().decode("utf-8"))
