@@ -7,6 +7,10 @@ import pandas as pd
 
 app = Flask(__name__)
 
+
+
+# Cookies -
+
 ##############################################################################################
 # Förstasidan samt reseplaneraren.
 @app.route('/')
@@ -74,7 +78,7 @@ def realtid():
             api_key = '045de5f58ee24c00ae94d24c4c958908'
             station_input = station
             api_url = f'https://api.sl.se/api2/LineData.json?model=site&key={api_key}&stopAreaName={station_id}'
-            # ... Och läser dessa om json.
+            # ... Och läser dessa som json.
             response = requests.get(api_url)
             data = response.json()
 
@@ -83,6 +87,7 @@ def realtid():
                 siteid = data['SiteId']
                 siteid_dict['SiteId'] = siteid
             else:
+                """skapa felkod"""
                 # Om ingen datat hittas så skickar användaren tillbaka.
                 return redirect('/realtid')
 
@@ -130,7 +135,8 @@ def realtid_result():
 
     realtids_df = pd.DataFrame(
         realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"][
-            "Trams"])
+            "Trams"]
+    )
 
     # Skapa DataFrames för varje färdmedelstyp
     tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
@@ -142,7 +148,7 @@ def realtid_result():
     buss_df = buss_df.sort_values(by="DisplayTime")
     sparvagn_df = sparvagn_df.sort_values(by="DisplayTime")
 
-    # Konvertera DataFrames till listor med dictionarys
+    # Konvertera DataFrames till listor med dictionaries
     tunnelbana_data = tunnelbana_df.to_dict(orient="records")
     buss_data = buss_df.to_dict(orient="records")
     sparvagn_data = sparvagn_df.to_dict(orient="records")
@@ -153,6 +159,8 @@ def realtid_result():
     sparvagn_data.sort(key=lambda x: x["DisplayTime"])
 
     return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, sparvagn_data=sparvagn_data)
+
+    # test för sortering av tider.
     """tunnelbana_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
     buss_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
     sparvagn_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
@@ -161,7 +169,7 @@ def realtid_result():
                            sparvagn_data=sparvagn_data)"""
 
 # Vad som behövs göras/Problem som stötts på:
-# - Pandas för snyggare utskrift?
+# - Pandas för snyggare utskrift? ///
 # - Cookies?
 ##############################################################################################
 
