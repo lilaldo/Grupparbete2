@@ -3,12 +3,16 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col text-center">
+            <div class="bg-secondary text-white p-5 mb-5 mt-5">
+                <div class="col" style="color: white; text-center">
             <h1>Sökresultat</h1>
-            <div id="results">
-                <pre>{{ results|tojson }}</pre>
-            </div>
+            <ul>
+                {% for result in travel_results %}
+                <li>{{ result }}</li>
+                {% endfor %}
+            </ul>
         </div>
+            </div>
     </div>
 </div>
 {% endblock %}
