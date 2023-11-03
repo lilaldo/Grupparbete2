@@ -157,7 +157,7 @@ def realtid():
                 siteid_dict['SiteId'] = siteid
             else:
                 # Om ingen datat hittas så skickar användaren tillbaka.
-                return redirect('/realtid')
+                return render_template('/realtid')
 
         # Lagring av API-key för att hämta realtids tidtabell.
         real_apikey = 'a8a250f2c2634381a8065817445217d5'
