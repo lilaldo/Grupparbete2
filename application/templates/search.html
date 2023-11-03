@@ -1,18 +1,27 @@
 {% extends "layout.html" %}
-{% block title %}RESULTAT{% endblock %}
 {% block content %}
+{% if search_history %}
+<div class="search_history">
+    <h3>Search History</h3>
+    <ul>
+        {% for query in search_history %}
+        <li>{{ query }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 <div class="container">
     <div class="row">
+        <div class="col">
             <div class="bg-secondary text-white p-5 mb-5 mt-5">
-                <div class="col" style="color: white; text-center">
-            <h1>Sökresultat</h1>
-            <ul>
-                {% for result in travel_results %}
-                <li>{{ result }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+                <h1 class="text-center" style="color: white;">Sökresultat</h1>
+                <ul>
+                    {% for result in travel_results %}
+                    <li>{{ result }}</li>
+                    {% endfor %}
+                </ul>
             </div>
+        </div>
     </div>
 </div>
 {% endblock %}

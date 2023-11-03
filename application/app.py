@@ -6,7 +6,7 @@ from datetime import datetime
 import pandas as pd
 
 app = Flask(__name__)
-
+search_history = []
 
 # Cookies -
 
@@ -34,6 +34,8 @@ def reseplanerare():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    global search_history
+
     if request.method == 'POST':
         start_pos = request.form.get('origin')
         end_pos = request.form.get('destination')
@@ -56,6 +58,9 @@ def search():
         second_station_data = json.loads(second_station.read().decode("utf-8"))
         second_station_result = second_station_data["ResponseData"]
         end_loc = second_station_result[0]['SiteId']
+
+        search_query = f"From: {start_pos}, To {end_pos}"
+        search_history.append(search_query)
 
         # Perform the trip planning
         api = "70441b322dc24df7bdc70cb278ed4192"
@@ -89,10 +94,14 @@ def search():
 
             travel_results.append(result)
 
+        resp = make_response(render_template('search.html', travel_results=travel_results))
+        resp.set_cookie('search_history', json.dumps(search_history))
 
-        return render_template('search.html', travel_results=travel_results)
+        return resp
 
-    return render_template('search.html')
+    search_history = json.loads(request.cookies.get('search_history', '[]'))
+
+    return render_template('search.html', search_history=search_history)
 
 
 ##############################################################################################
