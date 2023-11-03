@@ -11,9 +11,12 @@
     <div class="row">
         <div class="bg-secondary text-white p-5 mb-5 mt-5">
             <div class="col" style="color: white;">
+                <h4>Tidigare favorit-destinationer:</h4>
                 <ul>
                     {% for query in search_history %}
-                    <li>{{ query|replace("From", "Från")|replace("To", "Till") }}</li>
+                    <li>
+                        {{ query|replace("From", "Från")|replace("To", "Till") }}
+                    </li>
                     {% endfor %}
                 </ul>
             </div>

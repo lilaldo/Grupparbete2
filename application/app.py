@@ -244,7 +244,9 @@ def favoriter():
 
 """Vi hade andra visioner för denna sidan men tiden räckte inte till för det. 
 Till en början var tanken att vi skulle kombinera SL och polisen men efter att vi insett hur många olika api:er
-vi skulle behöva ha att göra med så stannade vi vid SL enbart. Här sparas tidigare sökningar från användaren."""
+vi skulle behöva ha att göra med så stannade vi vid SL enbart. Här sparas tidigare sökningar från användaren.
+Problemet här var att vi gärna hade önskat att användaren skulle kunnna ta sig tillbaka till resultaten när de klickade
+på de sparade sökningarna, men vi fokuserade istället på annat och det hanns inte med."""
 ##############################################################################################
 # Trafikläge-sidan
 @app.route('/trafiklage', methods=['POST', 'GET'])
