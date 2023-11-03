@@ -173,7 +173,7 @@ def realtid():
     # # Om ingen datat hittas så skickar användaren tillbaka.
     return render_template('realtid.html')
 
-
+"""Här kan användaren se en realtids-tabell för tunnelbana, buss och tåg från den sökta stationen samt om hur lång tid de går."""
 ##############################################################################################
 
 # Endpoint för resultat av realtids-sökningen.
