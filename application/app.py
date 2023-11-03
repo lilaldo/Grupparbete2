@@ -179,49 +179,56 @@ def realtid():
 # Endpoint för resultat av realtids-sökningen.
 @app.route('/realtid_result', methods=['POST', 'GET'])
 def realtid_result():
-    # Kontrollerar att stationen finns innan programmet körs vidare.
+    # Kontrollera om det finns en 'station'-parameter i GET-förfrågan
     station = request.args.get('station')
 
     try:
         if station is not None:
-            # Ignorerar tecken som inte kan hanteras i ASCII.
+            # Ignorera tecken som inte kan hanteras i ASCII
             station = station.encode('ascii', 'ignore').decode('ascii')
-            """ Problem/fixat: endpoint svarar inte på mellanrum. Ordnat nu."""
+
+            # Ersätt särskilda tecken och mellanslag med ersättningar
             station = quote(station)
-            """# Problem/fixat: endpoint svarar inte å, ä, ö. Kod för att ersätta dessa har lagts till och därmed resulterat i 200 :)"""
             station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
-            # Hämta SiteId för den sökta stationen från SL API.
+
+            # Hämta SiteId för den sökta stationen från SL API
             url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
             stat = urlopen(url1)
             stat1 = json.loads(stat.read().decode("utf-8"))
             stat2 = stat1["ResponseData"]
             station_id = stat2[0]['SiteId']
-            # En GET-förfrågan görs till SL API med hjälp av SiteId. Omvandlas sedan till json och lagras i realtidsdata.
+
+            # Gör en GET-förfrågan till SL API för att hämta realtidsinformation
             real_apikey = 'a8a250f2c2634381a8065817445217d5'
             api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station_id}'
             response = requests.get(api_url)
-            # Det vill säga här.
             realtidsdata = response.json()
-            # Skapar en Pandas DataFrame som innehåller realtidsinformationen från API-svaret.
-            # Som sammanfogas i en enda DataFrame.
+
+            # Skapa en Pandas DataFrame från realtidsinformationen
             realtids_df = pd.DataFrame(
                 realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] +
-                realtidsdata["ResponseData"][
-                    "Trains"])
-            # Skapar DataFrames för -:- baserat på informationen om realtid från API.
+                realtidsdata["ResponseData"]["Trains"])
+
+            # Skapa DataFrames för olika transporttyper
             tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
             buss_df = realtids_df[realtids_df["TransportMode"] == "BUS"]
             pendel_df = realtids_df[realtids_df["TransportMode"] == "TRAIN"]
-            # Konvertera DataFrames till listor med dictionaries.
+
+            # Konvertera DataFrames till listor med dictionaries
             tunnelbana_data = tunnelbana_df.to_dict(orient="records")
             buss_data = buss_df.to_dict(orient="records")
             pendel_data = pendel_df.to_dict(orient="records")
-            # De konverterade datalistorna skickas som variabler till HTML-filer som sedan visas på sidan.
-            return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data,
-                                   pendel_data=pendel_data)
+
+            # Returnera renderad HTML-sida med realtidsinformation
+            return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, pendel_data=pendel_data)
+
     except IndexError:
-        # Hantera fallet där det uppstår ett IndexError, till exempel om stationen inte finns.
-        return render_template('realtid.html')  # Returnerar ett felmeddelande om ogiltig station.
+        # Hantera fallet där det uppstår ett IndexError, t.ex. om stationen inte finns
+        return render_template('realtid.html')  # Returnera ett felmeddelande om ogiltig station
+
+    # Om något går fel och inget returneras, returnera ett generiskt felmeddelande
+    return render_template('realtid.html')
+
 
 """Hade stora utmaningar med att få fram SiteId från SL:s api då man delvis var tvungen att ha en api för
  att hämta alla hållplatser och sedan en annan för att hämta avgångar och sedan kombinera dessa två.
