@@ -174,47 +174,54 @@ def realtid():
 @app.route('/realtid_result', methods=['POST', 'GET'])
 def realtid_result():
     station = request.args.get('station')
+    if station is not None:
+    # Kontrollera om stationen inte är "None" innan vidare bearbetning
+    
+      station = station.encode('ascii', 'ignore').decode('ascii') # ignorerar tecken som inte kan representeras i ASCII-kodning.    
     # Problem/fixat: endpoint svarar inte på mellanrum. Ordnat nu.
-    station = quote(station)
+      station = quote(station)
     # Problem/fixat: endpoint svarar inte å, ä, ö. Kod för att ersätta dessa har lagts till och därmed resulterat i 200 :)
-    station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
-    url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
-    stat = urlopen(url1)
-    stat1 = json.loads(stat.read().decode("utf-8"))
-    stat2 = stat1["ResponseData"]
-    station_id = stat2[0]['SiteId']
+      station = station.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
+      url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station
+      stat = urlopen(url1)
+      stat1 = json.loads(stat.read().decode("utf-8"))
+      stat2 = stat1["ResponseData"]
+      station_id = stat2[0]['SiteId']
     # Api för att hämta realtids-svaret och leverera denna igen på denna endpoint, fast hämtat.
-    real_apikey = 'a8a250f2c2634381a8065817445217d5'
-    api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station_id}'
-    response = requests.get(api_url)
-    realtidsdata = response.json()
+      real_apikey = 'a8a250f2c2634381a8065817445217d5'
+      api_url = f'https://api.sl.se/api2/realtimedeparturesV4.json?key={real_apikey}&siteid={station_id}'
+      response = requests.get(api_url)
+      realtidsdata = response.json()
 
-    realtids_df = pd.DataFrame(
-        realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"][
+      realtids_df = pd.DataFrame(
+          realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] + realtidsdata["ResponseData"][
             "Trains"]
     )
 
     # Skapa DataFrames för varje färdmedelstyp
-    tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
-    buss_df = realtids_df[realtids_df["TransportMode"] == "BUS"]
-    pendel_df = realtids_df[realtids_df["TransportMode"] == "TRAIN"]
+      tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
+      buss_df = realtids_df[realtids_df["TransportMode"] == "BUS"]
+      pendel_df = realtids_df[realtids_df["TransportMode"] == "TRAIN"]
 
     # Sortera DataFrames efter tid (DisplayTime)
-    tunnelbana_df = tunnelbana_df.sort_values(by="DisplayTime")
-    buss_df = buss_df.sort_values(by="DisplayTime")
-    pendel_df = pendel_df.sort_values(by="DisplayTime")
+      tunnelbana_df = tunnelbana_df.sort_values(by="DisplayTime")
+      buss_df = buss_df.sort_values(by="DisplayTime")
+      pendel_df = pendel_df.sort_values(by="DisplayTime")
 
     # Konvertera DataFrames till listor med dictionaries
-    tunnelbana_data = tunnelbana_df.to_dict(orient="records")
-    buss_data = buss_df.to_dict(orient="records")
-    pendel_data = pendel_df.to_dict(orient="records")
+      tunnelbana_data = tunnelbana_df.to_dict(orient="records")
+      buss_data = buss_df.to_dict(orient="records")
+      pendel_data = pendel_df.to_dict(orient="records")
 
     # TEST - sortera efter avgångstid.
-    tunnelbana_data.sort(key=lambda x: x["DisplayTime"])
-    buss_data.sort(key=lambda x: x["DisplayTime"])
-    pendel_data.sort(key=lambda x: x["DisplayTime"])
+      tunnelbana_data.sort(key=lambda x: x["DisplayTime"])
+      buss_data.sort(key=lambda x: x["DisplayTime"])
+      pendel_data.sort(key=lambda x: x["DisplayTime"])
 
-    return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, pendel_data=pendel_data)
+      return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data, pendel_data=pendel_data)
+    else:
+        # Hantera fallet där stationen är "None" (eller ogiltig) här
+        return "Invalid station"  # Returnerar, ett error message.     
 
     # test för sortering av tider.
     """tunnelbana_data.sort(key=lambda x: convert_display_time(x["DisplayTime"]))
