@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center" style="color: white; margin-top: 20px;">
+            <h1>Mina Favoriter</h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="bg-secondary text-white p-5 mb-5 mt-5">
+            <div class="col" style="color: white;">
+                <ul>
+                    {% for query in search_history %}
+                    <li>{{ query|replace("From", "Från")|replace("To", "Till") }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

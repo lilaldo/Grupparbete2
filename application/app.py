@@ -236,13 +236,15 @@ def realtid_result():
 ##############################################################################################
 
 # Priser-sidan
-@app.route('/priser')
-def priser():
-    return render_template('priser.html')
+@app.route('/favoriter')
+def favoriter():
+    # Läs sökhistoriken från en cookie om den finns
+    search_history = json.loads(request.cookies.get('search_history', '[]'))
+    return render_template('favoriter.html', search_history=search_history)
 
 """Vi hade andra visioner för denna sidan men tiden räckte inte till för det. 
 Till en början var tanken att vi skulle kombinera SL och polisen men efter att vi insett hur många olika api:er
-vi skulle behöva ha att göra med så stannade vi vid SL enbart."""
+vi skulle behöva ha att göra med så stannade vi vid SL enbart. Här sparas tidigare sökningar från användaren."""
 ##############################################################################################
 # Trafikläge-sidan
 @app.route('/trafiklage', methods=['POST', 'GET'])

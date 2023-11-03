@@ -32,8 +32,8 @@ def test_realtid_result(client):
     assert response.status_code == 200
     
 # Test för '/priser' rutten
-def test_priser(client):
-    response = client.get('/priser')
+def test_favoriter(client):
+    response = client.get('/favoriter')
     assert response.status_code == 200
   
 
