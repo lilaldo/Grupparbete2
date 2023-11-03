@@ -12,64 +12,72 @@ search_history = []
 
 #############################################################################################
 # Förstasidan samt reseplaneraren.
+# Endpoints '/'
 @app.route('/')
 @app.route('/reseplanerare', methods=['GET', 'POST'])
 def reseplanerare():
     if request.method == 'POST':
         # Anropa SL:s API för att hämta alternativ baserat på användarens inmatning
         start = request.form.get('origin')
+        # Hämta destinationsstation från användarens inmatning
         destination = request.form.get('destination')
+        # API-nyckel för SL
         rese_apikey = '94e3fbf21ad242778aef5106d11e7cea'
+        # Skapa API-anrops-URL med användarinformation
         api_url = f'https://api.sl.se/api2/TravelplannerV3/trip.json?key={rese_apikey}&originId={start}&destId={destination}'
+        # Gör ett GET-anrop till SL:s API
         response = requests.get(api_url)
+        # Konvertera API-svaret till JSON-format
         data = response.json()
 
-        # KOD
+        # Extrahera stationernas namn från API-svaret
         station_options = [station['Name'] for station in data.get('ResponseData', [])]
-
+        # Rendera HTML-sidan med stationernas namn
         return render_template('reseplanerare.html', station_options=station_options)
-
+    # Rendera HTML-sidan om det inte är en POST-förfrågan (t.ex., när användaren öppnar sidan)
     return render_template('reseplanerare.html')
 
-
+"""Reseplanereraren är ganska lik SL:s egna, dock i ett simplare format. När användaren skriver in önskad start & slut-destination
+ så visas nästkommande resa och hur personen ska ta sig dit"""
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    global search_history
+    global search_history  # Tillåt att använda en global variabel 'search_history'
 
     if request.method == 'POST':
-        start_pos = request.form.get('origin')
-        end_pos = request.form.get('destination')
-        station1 = start_pos
-        station1 = station1.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
+        start_pos = request.form.get('origin')  # Hämta startstation från användarens inmatning
+        end_pos = request.form.get('destination')  # Hämta destinationsstation från användarens inmatning
+
+        # Omvandla tecken i stationernas namn för att hantera särskilda tecken
+        station1 = start_pos.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
+        station2 = end_pos.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
+
+        # Skapa URL för att söka den första stationen
         url1 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station1
         first_station = urlopen(url1)
         first_station_data = json.loads(first_station.read().decode("utf-8"))
         first_station_result = first_station_data["ResponseData"]
         start_loc = first_station_result[0]['SiteId']
 
-        # print för att kontrollera att det är korrekt
-        # print(first_station_result[0]['SiteId'])
-
-        # få station2 (till) siteId
-        station2 = end_pos
-        station2 = station2.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace(" ", "")
+        # Skapa URL för att söka den andra stationen
         url2 = "https://api.sl.se/api2/typeahead.json?key=460343b3030c4ed9a213f0727f858052&searchstring=" + station2
         second_station = urlopen(url2)
         second_station_data = json.loads(second_station.read().decode("utf-8"))
         second_station_result = second_station_data["ResponseData"]
         end_loc = second_station_result[0]['SiteId']
 
+        # Skapa en sökfråga och lägg till den i sökhistoriken
         search_query = f"From: {start_pos}, To {end_pos}"
         search_history.append(search_query)
 
-        # Perform the trip planning
+        # Utför reseplanering med hjälp av SL:s API
         api = "70441b322dc24df7bdc70cb278ed4192"
         url = f"https://api.sl.se/api2/TravelplannerV3_1/trip.json?key={api}&originExtId={start_loc}&destExtId={end_loc}"
         trip = urlopen(url)
         trip_data = json.loads(trip.read().decode("utf-8"))
         antal = trip_data["Trip"][0]["LegList"]["Leg"]
         count = len(antal)
-        travel_results = []  # A list to store the trip results
+        # En lista för att lagra reseinformation
+        travel_results = []
 
         for stopp in range(count):
             if trip_data["Trip"][0]["LegList"]["Leg"][stopp]["type"] != "WALK":
@@ -94,16 +102,18 @@ def search():
 
             travel_results.append(result)
 
+        # Skapa ett HTTP-svar med resultatet och uppdatera sökhistoriken som en cookie
         resp = make_response(render_template('search.html', travel_results=travel_results))
         resp.set_cookie('search_history', json.dumps(search_history))
 
         return resp
 
+    # Läs sökhistoriken från en cookie om det finns någon
     search_history = json.loads(request.cookies.get('search_history', '[]'))
 
     return render_template('search.html', search_history=search_history)
 
-
+"""Resultaten visas för användaren i text-format och berätta hur användaren tar sig från punkt a till b. Cookies sparar även tidigare sökta resor som visas för användaren nere i vänstra hörnet."""
 ##############################################################################################
 
 # Dict för att lagra SiteId.
@@ -198,17 +208,14 @@ def realtid_result():
                 realtidsdata["ResponseData"]["Metros"] + realtidsdata["ResponseData"]["Buses"] +
                 realtidsdata["ResponseData"][
                     "Trains"])
-
             # Skapar DataFrames för -:- baserat på informationen om realtid från API.
             tunnelbana_df = realtids_df[realtids_df["TransportMode"] == "METRO"]
             buss_df = realtids_df[realtids_df["TransportMode"] == "BUS"]
             pendel_df = realtids_df[realtids_df["TransportMode"] == "TRAIN"]
-
             # Konvertera DataFrames till listor med dictionaries.
             tunnelbana_data = tunnelbana_df.to_dict(orient="records")
             buss_data = buss_df.to_dict(orient="records")
             pendel_data = pendel_df.to_dict(orient="records")
-
             # De konverterade datalistorna skickas som variabler till HTML-filer som sedan visas på sidan.
             return render_template('realtid_result.html', tunnelbana_data=tunnelbana_data, buss_data=buss_data,
                                    pendel_data=pendel_data)
@@ -216,8 +223,9 @@ def realtid_result():
         # Hantera fallet där det uppstår ett IndexError, till exempel om stationen inte finns.
         return render_template('realtid.html')  # Returnerar ett felmeddelande om ogiltig station.
 
-
-# - Cookies?
+"""Hade stora utmaningar med att få fram SiteId från SL:s api då man delvis var tvungen att ha en api för
+ att hämta alla hållplatser och sedan en annan för att hämta avgångar och sedan kombinera dessa två.
+ Med dessa behöver sedan url:en med de olika nyckelvärden ändras beroende på vad användaren matar in"""
 ##############################################################################################
 
 # Priser-sidan
@@ -225,19 +233,19 @@ def realtid_result():
 def priser():
     return render_template('priser.html')
 
-
+"""Vi hade andra visioner för denna sidan men tiden räckte inte till för det. 
+Till en början var tanken att vi skulle kombinera SL och polisen men efter att vi insett hur många olika api:er
+vi skulle behöva ha att göra med så stannade vi vid SL enbart."""
 ##############################################################################################
 # Trafikläge-sidan
 @app.route('/trafiklage', methods=['POST', 'GET'])
 def trafiklage():
-    error_message = ""  # Initsierar error_message som en tom sträng
+    error_message = ""  # error_message == tom sträng
     # Ange API-endpointen för trafikinformation (exempel)
     trinfo_apikey = '854b0bee7c2841dfbcb36e421c4616f0'
     api_url = f'https://api.sl.se/api2/trafficsituation.json?key={trinfo_apikey}'
-
     # Gör en HTTP-förfrågan till trafikinformationstjänsten
     response = requests.get(api_url)
-
     # Kontrollera om förfrågan var framgångsrik (HTTP-statuskod 200)
     if response.status_code == 200:
         traffic_data = response.json()  # Förutsatt att svaret är i JSON-format
@@ -247,6 +255,7 @@ def trafiklage():
 
     return render_template('trafiklage.html', traffic_data=traffic_data, error_message=error_message)
 
+"""Här ser användaren de stora trafikläget som SL går ut med. Mindre förseningar och andra fel som inte påverkar den större allmänheten visas inte här."""
 
 if __name__ == '__main__':
     app.run(debug=True)

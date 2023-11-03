@@ -1,15 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-{% if search_history %}
-<div class="search_history">
-    <h3>Search History</h3>
-    <ul>
-        {% for query in search_history %}
-        <li>{{ query }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
 <div class="container">
     <div class="row">
         <div class="col">
@@ -24,4 +14,14 @@
         </div>
     </div>
 </div>
+{% if search_history %}
+<div class="search_history" style="color: white; position: absolute; left: 0; bottom: 15px; margin: 10px;">
+    <h3>Search History</h3>
+    <ul>
+        {% for query in search_history %}
+        <li>{{ query }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 {% endblock %}

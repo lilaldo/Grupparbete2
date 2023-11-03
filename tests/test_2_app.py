@@ -26,7 +26,7 @@ def test_realtid(client):
     assert response.status_code == 200
    
 
-# Test för  '/realtid_result' rutten
+# Test för '/realtid_result' rutten
 def test_realtid_result(client):
     response = client.get('/realtid_result')
     assert response.status_code == 200
